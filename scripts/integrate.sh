@@ -340,11 +340,21 @@ main() {
     create_uninstall_script
 
     echo -e "\n${GREEN}🎉 Integration completed successfully!${NC}"
-    echo -e "\n${BLUE}Next steps:${NC}"
-    echo "1. Restart Augment Code"
-    echo "2. Test with: 'Can you crawl the Python documentation?'"
-    echo "3. Use the uninstall script if needed: ./${MCP_DIR}/scripts/uninstall.sh"
+    echo -e "\n${YELLOW}⚠️  IMPORTANT: You must configure Augment Code manually:${NC}"
+    echo -e "\n${BLUE}Required steps:${NC}"
+    echo "1. Open Augment Code → Settings (gear icon) → MCP Servers"
+    echo "2. Click 'Add Server' and enter:"
+    echo "   - Name: crawl4ai-knowledge"
+    echo "   - Command: uv"
+    echo "   - Arguments: run python server.py"
+    echo "   - Working Directory: ${PROJECT_ROOT}/${MCP_DIR}"
+    echo "   - Environment Variables: PYTHONPATH = ${PROJECT_ROOT}/${MCP_DIR}/src"
+    echo "3. Restart Augment Code completely"
+    echo "4. Test with: 'Can you crawl the Python documentation?'"
+    echo -e "\n${BLUE}For detailed instructions, see:${NC}"
+    echo "https://github.com/carlvaneijk/crawl4ai_augment/blob/main/SELF_INTEGRATION_GUIDE.md"
     echo -e "\n${BLUE}MCP server location: ${PROJECT_ROOT}/${MCP_DIR}${NC}"
+    echo -e "${BLUE}Uninstall script: ./${MCP_DIR}/scripts/uninstall.sh${NC}"
 }
 
 # Run main function

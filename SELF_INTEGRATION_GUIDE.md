@@ -45,42 +45,100 @@ The script automatically:
 5. **Updates configuration**: Adds crawl4ai server to existing MCP servers list
 6. **Tests connection**: Verifies the server starts correctly
 
-## Step 3: Configuration Detection and Update
+## Step 3: Configure Augment Code MCP Server
 
-The script intelligently handles configuration:
+After the integration script completes, you need to add the MCP server to Augment's configuration:
 
-### Existing MCP Servers
-- Detects existing `settings.json` or Settings Panel configuration
-- Appends crawl4ai server without disrupting existing servers
-- Preserves all existing MCP server configurations
+### Option A: Using Augment Settings Panel (Recommended)
 
-### New MCP Setup
-- Creates initial MCP configuration if none exists
-- Sets up crawl4ai as the first MCP server
+1. **Open Augment Code**
+2. **Click the gear icon** in the upper right corner
+3. **Navigate to "MCP Servers"** section
+4. **Click "Add Server"** and enter:
+   - **Name**: `crawl4ai-knowledge`
+   - **Command**: `uv`
+   - **Arguments**: `run python server.py`
+   - **Working Directory**: `{{YOUR_PROJECT_PATH}}/.crawl4ai-mcp`
+   - **Environment Variables**:
+     - Key: `PYTHONPATH`
+     - Value: `{{YOUR_PROJECT_PATH}}/.crawl4ai-mcp/src`
 
-### Configuration Template Applied
+### Option B: Edit settings.json Manually
+
+1. **Find your Augment settings file** (usually at `~/Library/Application Support/Augment/settings.json`)
+2. **Add the MCP server configuration**:
+
 ```json
 {
-  "name": "crawl4ai-knowledge",
-  "command": "uv",
-  "args": ["run", "python", "server.py"],
-  "cwd": "{{PROJECT_ROOT}}/.crawl4ai-mcp",
-  "env": {
-    "PYTHONPATH": "{{PROJECT_ROOT}}/.crawl4ai-mcp"
+  "augment": {
+    "advanced": {
+      "mcpServers": [
+        {
+          "name": "crawl4ai-knowledge",
+          "command": "uv",
+          "args": ["run", "python", "server.py"],
+          "cwd": "/FULL/PATH/TO/YOUR/PROJECT/.crawl4ai-mcp",
+          "env": {
+            "PYTHONPATH": "/FULL/PATH/TO/YOUR/PROJECT/.crawl4ai-mcp/src"
+          }
+        }
+      ]
+    }
   }
 }
 ```
 
-## Step 4: Verification and Testing
+**Important**: Replace `/FULL/PATH/TO/YOUR/PROJECT` with the actual absolute path to your project directory.
 
-After integration, the script:
+### If You Have Existing MCP Servers
 
-1. **Starts the MCP server** in test mode
-2. **Verifies tool availability** (crawl_documentation, extend_knowledge_graph)
-3. **Tests basic functionality** with a simple crawl
-4. **Reports integration status**
+If you already have other MCP servers configured, add the crawl4ai server to the existing array:
 
-## Step 5: Usage Instructions
+```json
+{
+  "augment": {
+    "advanced": {
+      "mcpServers": [
+        {
+          "name": "your-existing-server",
+          "command": "...",
+          "args": ["..."]
+        },
+        {
+          "name": "crawl4ai-knowledge",
+          "command": "uv",
+          "args": ["run", "python", "server.py"],
+          "cwd": "/FULL/PATH/TO/YOUR/PROJECT/.crawl4ai-mcp",
+          "env": {
+            "PYTHONPATH": "/FULL/PATH/TO/YOUR/PROJECT/.crawl4ai-mcp/src"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+## Step 4: Restart Augment Code
+
+After adding the MCP server configuration:
+
+1. **Restart Augment Code** completely (quit and reopen)
+2. **Verify the server is loaded** - you should see "crawl4ai-knowledge" in the MCP servers list
+3. **Check for any error messages** in the Augment logs
+
+## Step 5: Test the Integration
+
+Test that the MCP server is working:
+
+1. **Open a chat in Augment**
+2. **Try a simple crawl command**:
+   ```
+   "Can you crawl the Python documentation homepage and tell me what you find?"
+   ```
+3. **Verify the tools are available** - Augment should be able to use the crawling capabilities
+
+## Step 6: Usage Instructions
 
 Once integrated, use natural language with Augment:
 
@@ -129,9 +187,11 @@ This will:
 - Check permissions: Ensure write access to project directory
 
 ### MCP Server Not Found
-- Restart Augment Code after integration
-- Check settings.json was updated correctly
-- Verify server starts manually: `cd .crawl4ai-mcp && uv run python server.py`
+- **Restart Augment Code** completely after adding the MCP server configuration
+- **Check the MCP server configuration** in Augment settings - ensure the working directory path is correct
+- **Verify server starts manually**: `cd .crawl4ai-mcp && uv run python server.py`
+- **Check Augment logs** for any error messages about the MCP server
+- **Ensure absolute paths** are used in the configuration, not relative paths
 
 ### Crawling Fails
 - Ensure internet connectivity

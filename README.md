@@ -23,6 +23,20 @@ cd /path/to/your/project
 /path/to/crawl4ai_augment/scripts/integrate.sh
 ```
 
+### After Integration: Configure Augment
+
+**Important**: After running the integration script, you need to add the MCP server to Augment:
+
+1. **Open Augment Code** → **Settings** (gear icon) → **MCP Servers**
+2. **Add Server** with these details:
+   - **Name**: `crawl4ai-knowledge`
+   - **Command**: `uv`
+   - **Arguments**: `run python server.py`
+   - **Working Directory**: `{{YOUR_PROJECT_PATH}}/.crawl4ai-mcp`
+3. **Restart Augment Code**
+
+See [SELF_INTEGRATION_GUIDE.md](SELF_INTEGRATION_GUIDE.md) for detailed configuration instructions.
+
 ## 📁 Project Structure
 
 ```
