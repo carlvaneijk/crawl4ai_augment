@@ -1,0 +1,22 @@
+{
+  "name": "crawl4ai-knowledge",
+  "command": "uv",
+  "args": ["run", "python", "server.py"],
+  "cwd": "{{PROJECT_ROOT}}/.crawl4ai-mcp",
+  "env": {
+    "PYTHONPATH": "{{PROJECT_ROOT}}/.crawl4ai-mcp/src"
+  },
+  "description": "Crawl4AI MCP server for documentation crawling and knowledge graph building",
+  "capabilities": {
+    "tools": [
+      "crawl_documentation",
+      "extend_knowledge_graph"
+    ],
+    "resources": [
+      "knowledge_graph"
+    ],
+    "prompts": [
+      "analyze_framework"
+    ]
+  }
+}
