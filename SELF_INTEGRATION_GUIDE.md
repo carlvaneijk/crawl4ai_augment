@@ -26,9 +26,12 @@ Or manually run the integration script:
 
 ```bash
 # Clone the integration package
-git clone https://github.com/carlvaneijk/crawl4ai_augment.git .crawl4ai-mcp
-cd .crawl4ai-mcp
-./scripts/integrate.sh
+git clone https://github.com/carlvaneijk/crawl4ai_augment.git
+cd crawl4ai_augment
+
+# Run integration from your target project directory
+cd /path/to/your/project
+/path/to/crawl4ai_augment/scripts/integrate.sh
 ```
 
 ## Step 2: What the Integration Script Does

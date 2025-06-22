@@ -4,19 +4,23 @@ A complete integration package for adding Crawl4AI documentation crawling capabi
 
 ## 🚀 Quick Start
 
-**For Augment to self-integrate this capability:**
+**Option 1: One-line integration (recommended for Augment):**
 
 ```bash
 # From any project directory where you want crawling capabilities
 curl -sSL https://raw.githubusercontent.com/carlvaneijk/crawl4ai_augment/main/scripts/integrate.sh | bash
 ```
 
-**Manual integration:**
+**Option 2: Manual integration:**
 
 ```bash
+# Clone the repository first
 git clone https://github.com/carlvaneijk/crawl4ai_augment.git
 cd crawl4ai_augment
-./scripts/integrate.sh
+
+# Then run integration from your target project directory
+cd /path/to/your/project
+/path/to/crawl4ai_augment/scripts/integrate.sh
 ```
 
 ## 📁 Project Structure
@@ -81,6 +85,22 @@ To remove the integration:
 ```bash
 ./.crawl4ai-mcp/scripts/uninstall.sh
 ```
+
+## 🔧 Troubleshooting
+
+### Integration Fails with "No such file or directory"
+- Ensure you have internet connectivity for downloading files
+- Check that curl is installed: `curl --version`
+- Try the manual integration method instead
+
+### MCP Server Not Found in Augment
+- Restart Augment Code after integration
+- Check that the integration completed successfully
+- Verify the server starts manually: `cd .crawl4ai-mcp && uv run python server.py --help`
+
+### Permission Denied Errors
+- Ensure you have write permissions in the project directory
+- Try running with appropriate permissions or from a different directory
 
 ## 📚 Documentation
 

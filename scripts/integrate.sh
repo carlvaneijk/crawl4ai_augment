@@ -70,6 +70,14 @@ check_prerequisites() {
         print_error "No write permissions in project directory"
         exit 1
     fi
+
+    # Check for curl (needed for remote downloads)
+    if command -v curl &> /dev/null; then
+        print_status "curl found"
+    else
+        print_error "curl not found (required for downloading files)"
+        exit 1
+    fi
 }
 
 # Create isolated MCP environment
@@ -94,10 +102,40 @@ create_mcp_environment() {
 copy_server_files() {
     echo -e "\n${BLUE}Copying MCP server files...${NC}"
 
-    # Copy from the crawl4ai_augment repository
-    cp "${SCRIPT_DIR}/../mcp-server/src/crawl4ai_mcp/server.py" "${MCP_DIR}/src/crawl4ai_mcp/"
-    cp "${SCRIPT_DIR}/../mcp-server/src/crawl4ai_mcp/__init__.py" "${MCP_DIR}/src/crawl4ai_mcp/"
-    cp "${SCRIPT_DIR}/../mcp-server/pyproject.toml" "${MCP_DIR}/"
+    # Check if we're running from the repository or via curl
+    if [ -f "${SCRIPT_DIR}/../mcp-server/src/crawl4ai_mcp/server.py" ]; then
+        # Running from cloned repository
+        cp "${SCRIPT_DIR}/../mcp-server/src/crawl4ai_mcp/server.py" "${MCP_DIR}/src/crawl4ai_mcp/"
+        cp "${SCRIPT_DIR}/../mcp-server/src/crawl4ai_mcp/__init__.py" "${MCP_DIR}/src/crawl4ai_mcp/"
+        cp "${SCRIPT_DIR}/../mcp-server/pyproject.toml" "${MCP_DIR}/"
+        print_status "Copied server files from local repository"
+    else
+        # Running via curl - download files directly from GitHub
+        echo -e "${BLUE}Downloading server files from GitHub...${NC}"
+
+        # Download server.py
+        if ! curl -sSL "https://raw.githubusercontent.com/carlvaneijk/crawl4ai_augment/main/mcp-server/src/crawl4ai_mcp/server.py" \
+            -o "${MCP_DIR}/src/crawl4ai_mcp/server.py"; then
+            print_error "Failed to download server.py"
+            exit 1
+        fi
+
+        # Download __init__.py
+        if ! curl -sSL "https://raw.githubusercontent.com/carlvaneijk/crawl4ai_augment/main/mcp-server/src/crawl4ai_mcp/__init__.py" \
+            -o "${MCP_DIR}/src/crawl4ai_mcp/__init__.py"; then
+            print_error "Failed to download __init__.py"
+            exit 1
+        fi
+
+        # Download pyproject.toml
+        if ! curl -sSL "https://raw.githubusercontent.com/carlvaneijk/crawl4ai_augment/main/mcp-server/pyproject.toml" \
+            -o "${MCP_DIR}/pyproject.toml"; then
+            print_error "Failed to download pyproject.toml"
+            exit 1
+        fi
+
+        print_status "Downloaded server files from GitHub"
+    fi
 
     # Create a simple server runner
     cat > "${MCP_DIR}/server.py" << 'EOF'
