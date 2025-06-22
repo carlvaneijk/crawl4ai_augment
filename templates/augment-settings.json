@@ -1,17 +1,13 @@
 {
-  "augment": {
-    "advanced": {
-      "mcpServers": [
-        {
-          "name": "crawl4ai-knowledge",
-          "command": "uv",
-          "args": ["run", "python", "server.py"],
-          "cwd": "{{PROJECT_ROOT}}/.crawl4ai-mcp",
-          "env": {
-            "PYTHONPATH": "{{PROJECT_ROOT}}/.crawl4ai-mcp/src"
-          }
-        }
-      ]
+  "augment.advanced.mcpServers": [
+    {
+      "name": "crawl4ai-knowledge",
+      "command": "uv",
+      "args": ["run", "python", "server.py"],
+      "cwd": "{{PROJECT_ROOT}}/.crawl4ai-mcp",
+      "env": {
+        "PYTHONPATH": "{{PROJECT_ROOT}}/.crawl4ai-mcp/src"
+      }
     }
-  }
+  ]
 }

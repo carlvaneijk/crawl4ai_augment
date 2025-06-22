@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Crawl4AI MCP Server Integration Script
-# This script automatically integrates the Crawl4AI MCP server into any existing project
+# Crawl4AI MCP Server Global Installation Script
+# This script installs the Crawl4AI MCP server globally for Augment
 
 set -e  # Exit on any error
 
@@ -12,13 +12,12 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Configuration
-MCP_DIR=".crawl4ai-mcp"
+# Simple configuration
+INSTALL_DIR="$HOME/.augment/crawl4ai-mcp"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(pwd)"
 
-echo -e "${BLUE}🚀 Starting Crawl4AI MCP Server Integration${NC}"
-echo -e "${BLUE}Project Root: ${PROJECT_ROOT}${NC}"
+echo -e "${BLUE}🚀 Installing Crawl4AI MCP Server for Augment${NC}"
+echo -e "${BLUE}Installation Location: ${INSTALL_DIR}${NC}"
 
 # Function to print status messages
 print_status() {
@@ -63,14 +62,6 @@ check_prerequisites() {
         exit 1
     fi
 
-    # Check write permissions
-    if [ -w "${PROJECT_ROOT}" ]; then
-        print_status "Write permissions verified"
-    else
-        print_error "No write permissions in project directory"
-        exit 1
-    fi
-
     # Check for curl (needed for remote downloads)
     if command -v curl &> /dev/null; then
         print_status "curl found"
@@ -80,34 +71,33 @@ check_prerequisites() {
     fi
 }
 
-# Create isolated MCP environment
-create_mcp_environment() {
-    echo -e "\n${BLUE}Creating MCP server environment...${NC}"
+# Create installation directory
+create_install_directory() {
+    echo -e "\n${BLUE}Creating installation directory...${NC}"
 
     # Remove existing directory if it exists
-    if [ -d "${MCP_DIR}" ]; then
-        print_warning "Existing ${MCP_DIR} found, removing..."
-        rm -rf "${MCP_DIR}"
+    if [ -d "${INSTALL_DIR}" ]; then
+        print_warning "Existing installation found, removing..."
+        rm -rf "${INSTALL_DIR}"
     fi
 
     # Create directory structure
-    mkdir -p "${MCP_DIR}/src/crawl4ai_mcp"
-    mkdir -p "${MCP_DIR}/knowledge_cache"
-    mkdir -p "${MCP_DIR}/scripts"
+    mkdir -p "${INSTALL_DIR}/src/crawl4ai_mcp"
+    mkdir -p "${INSTALL_DIR}/knowledge_cache"
 
-    print_status "Created ${MCP_DIR} directory structure"
+    print_status "Created installation directory"
 }
 
 # Copy server files
 copy_server_files() {
-    echo -e "\n${BLUE}Copying MCP server files...${NC}"
+    echo -e "\n${BLUE}Installing server files...${NC}"
 
     # Check if we're running from the repository or via curl
     if [ -f "${SCRIPT_DIR}/../mcp-server/src/crawl4ai_mcp/server.py" ]; then
         # Running from cloned repository
-        cp "${SCRIPT_DIR}/../mcp-server/src/crawl4ai_mcp/server.py" "${MCP_DIR}/src/crawl4ai_mcp/"
-        cp "${SCRIPT_DIR}/../mcp-server/src/crawl4ai_mcp/__init__.py" "${MCP_DIR}/src/crawl4ai_mcp/"
-        cp "${SCRIPT_DIR}/../mcp-server/pyproject.toml" "${MCP_DIR}/"
+        cp "${SCRIPT_DIR}/../mcp-server/src/crawl4ai_mcp/server.py" "${INSTALL_DIR}/src/crawl4ai_mcp/"
+        cp "${SCRIPT_DIR}/../mcp-server/src/crawl4ai_mcp/__init__.py" "${INSTALL_DIR}/src/crawl4ai_mcp/"
+        cp "${SCRIPT_DIR}/../mcp-server/pyproject.toml" "${INSTALL_DIR}/"
         print_status "Copied server files from local repository"
     else
         # Running via curl - download files directly from GitHub
@@ -115,21 +105,21 @@ copy_server_files() {
 
         # Download server.py
         if ! curl -sSL "https://raw.githubusercontent.com/carlvaneijk/crawl4ai_augment/main/mcp-server/src/crawl4ai_mcp/server.py" \
-            -o "${MCP_DIR}/src/crawl4ai_mcp/server.py"; then
+            -o "${INSTALL_DIR}/src/crawl4ai_mcp/server.py"; then
             print_error "Failed to download server.py"
             exit 1
         fi
 
         # Download __init__.py
         if ! curl -sSL "https://raw.githubusercontent.com/carlvaneijk/crawl4ai_augment/main/mcp-server/src/crawl4ai_mcp/__init__.py" \
-            -o "${MCP_DIR}/src/crawl4ai_mcp/__init__.py"; then
+            -o "${INSTALL_DIR}/src/crawl4ai_mcp/__init__.py"; then
             print_error "Failed to download __init__.py"
             exit 1
         fi
 
         # Download pyproject.toml
         if ! curl -sSL "https://raw.githubusercontent.com/carlvaneijk/crawl4ai_augment/main/mcp-server/pyproject.toml" \
-            -o "${MCP_DIR}/pyproject.toml"; then
+            -o "${INSTALL_DIR}/pyproject.toml"; then
             print_error "Failed to download pyproject.toml"
             exit 1
         fi
@@ -138,7 +128,7 @@ copy_server_files() {
     fi
 
     # Create a simple server runner
-    cat > "${MCP_DIR}/server.py" << 'EOF'
+    cat > "${INSTALL_DIR}/server.py" << 'EOF'
 #!/usr/bin/env python3
 """
 Simple runner for the Crawl4AI MCP server
@@ -155,15 +145,15 @@ if __name__ == "__main__":
     mcp.run(transport="stdio")
 EOF
 
-    chmod +x "${MCP_DIR}/server.py"
-    print_status "Copied server implementation files"
+    chmod +x "${INSTALL_DIR}/server.py"
+    print_status "Server files installed"
 }
 
 # Install dependencies
 install_dependencies() {
     echo -e "\n${BLUE}Installing dependencies...${NC}"
 
-    cd "${MCP_DIR}"
+    cd "${INSTALL_DIR}"
 
     if [ "${PACKAGE_MANAGER}" = "uv" ]; then
         # Create virtual environment with UV
@@ -180,181 +170,47 @@ install_dependencies() {
         pip install -e .
         print_status "Installed dependencies with pip"
     fi
-
-    cd "${PROJECT_ROOT}"
 }
 
-# Detect and update Augment configuration
-update_augment_config() {
-    echo -e "\n${BLUE}Updating Augment configuration...${NC}"
+# Test the server
+test_server() {
+    echo -e "\n${BLUE}Testing server installation...${NC}"
 
-    # Common Augment settings locations
-    SETTINGS_LOCATIONS=(
-        "$HOME/Library/Application Support/Augment/settings.json"
-        "$HOME/.config/augment/settings.json"
-        "$HOME/.augment/settings.json"
-        "./augment-settings.json"
-        "./.augment/settings.json"
-    )
-
-    SETTINGS_FILE=""
-
-    # Find existing settings file
-    for location in "${SETTINGS_LOCATIONS[@]}"; do
-        if [ -f "$location" ]; then
-            SETTINGS_FILE="$location"
-            print_status "Found Augment settings at: $location"
-            break
-        fi
-    done
-
-    # Create MCP server configuration
-    MCP_CONFIG=$(cat << EOF
-{
-  "name": "crawl4ai-knowledge",
-  "command": "${PACKAGE_MANAGER}",
-  "args": ["run", "python", "server.py"],
-  "cwd": "${PROJECT_ROOT}/${MCP_DIR}",
-  "env": {
-    "PYTHONPATH": "${PROJECT_ROOT}/${MCP_DIR}/src"
-  }
-}
-EOF
-)
-
-    if [ -n "$SETTINGS_FILE" ]; then
-        # Backup existing settings
-        cp "$SETTINGS_FILE" "${SETTINGS_FILE}.backup"
-        print_status "Backed up existing settings"
-
-        # Update existing settings (this is a simplified approach)
-        # In a real implementation, you'd use jq or a Python script for proper JSON manipulation
-        print_warning "Manual configuration update required"
-        echo -e "${YELLOW}Please add this MCP server configuration to your Augment settings:${NC}"
-        echo "$MCP_CONFIG"
-    else
-        # Create new settings file
-        SETTINGS_FILE="$HOME/.config/augment/settings.json"
-        mkdir -p "$(dirname "$SETTINGS_FILE")"
-
-        cat > "$SETTINGS_FILE" << EOF
-{
-  "augment": {
-    "advanced": {
-      "mcpServers": [
-        $MCP_CONFIG
-      ]
-    }
-  }
-}
-EOF
-        print_status "Created new Augment settings file"
-    fi
-}
-
-# Update .gitignore
-update_gitignore() {
-    echo -e "\n${BLUE}Updating .gitignore...${NC}"
-
-    if [ -f ".gitignore" ]; then
-        # Check if already ignored
-        if ! grep -q "${MCP_DIR}" .gitignore; then
-            echo "" >> .gitignore
-            echo "# Crawl4AI MCP Server" >> .gitignore
-            echo "${MCP_DIR}/" >> .gitignore
-            print_status "Added ${MCP_DIR} to .gitignore"
-        else
-            print_status "${MCP_DIR} already in .gitignore"
-        fi
-    else
-        # Create .gitignore
-        cat > .gitignore << EOF
-# Crawl4AI MCP Server
-${MCP_DIR}/
-EOF
-        print_status "Created .gitignore with ${MCP_DIR}"
-    fi
-}
-
-# Test the MCP server
-test_mcp_server() {
-    echo -e "\n${BLUE}Testing MCP server...${NC}"
-
-    cd "${MCP_DIR}"
+    cd "${INSTALL_DIR}"
 
     # Test server startup
     if [ "${PACKAGE_MANAGER}" = "uv" ]; then
-        timeout 10s uv run python server.py --help > /dev/null 2>&1 || true
+        timeout 5s uv run python server.py --help > /dev/null 2>&1 || true
     else
         source .venv/bin/activate
-        timeout 10s python server.py --help > /dev/null 2>&1 || true
+        timeout 5s python server.py --help > /dev/null 2>&1 || true
     fi
 
-    print_status "MCP server test completed"
-    cd "${PROJECT_ROOT}"
+    print_status "Server installation test completed"
 }
 
-# Create uninstall script
-create_uninstall_script() {
-    echo -e "\n${BLUE}Creating uninstall script...${NC}"
-
-    cat > "${MCP_DIR}/scripts/uninstall.sh" << 'EOF'
-#!/bin/bash
-
-# Uninstall script for Crawl4AI MCP Server
-
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-MCP_DIR=".crawl4ai-mcp"
-
-echo "🗑️  Removing Crawl4AI MCP Server integration..."
-
-# Remove the MCP directory
-if [ -d "${PROJECT_ROOT}/${MCP_DIR}" ]; then
-    rm -rf "${PROJECT_ROOT}/${MCP_DIR}"
-    echo "✓ Removed ${MCP_DIR} directory"
-fi
-
-# Remove from .gitignore
-if [ -f "${PROJECT_ROOT}/.gitignore" ]; then
-    sed -i.bak '/# Crawl4AI MCP Server/,+1d' "${PROJECT_ROOT}/.gitignore"
-    echo "✓ Cleaned up .gitignore"
-fi
-
-echo "✓ Crawl4AI MCP Server integration removed"
-echo "⚠️  Please manually remove the MCP server from your Augment settings"
-EOF
-
-    chmod +x "${MCP_DIR}/scripts/uninstall.sh"
-    print_status "Created uninstall script"
-}
-
-# Main integration flow
+# Main installation flow
 main() {
     check_prerequisites
-    create_mcp_environment
+    create_install_directory
     copy_server_files
     install_dependencies
-    update_augment_config
-    update_gitignore
-    test_mcp_server
-    create_uninstall_script
+    test_server
 
-    echo -e "\n${GREEN}🎉 Integration completed successfully!${NC}"
-    echo -e "\n${YELLOW}⚠️  IMPORTANT: You must configure Augment Code manually:${NC}"
-    echo -e "\n${BLUE}Required steps:${NC}"
+    echo -e "\n${GREEN}🎉 Crawl4AI MCP Server installed successfully!${NC}"
+    echo -e "\n${YELLOW}⚠️  IMPORTANT: Add this server to Augment Code:${NC}"
+    echo -e "\n${BLUE}Augment Settings Configuration:${NC}"
     echo "1. Open Augment Code → Settings (gear icon) → MCP Servers"
     echo "2. Click 'Add Server' and enter:"
     echo "   - Name: crawl4ai-knowledge"
-    echo "   - Command: uv"
+    echo "   - Command: ${PACKAGE_MANAGER}"
     echo "   - Arguments: run python server.py"
-    echo "   - Working Directory: ${PROJECT_ROOT}/${MCP_DIR}"
-    echo "   - Environment Variables: PYTHONPATH = ${PROJECT_ROOT}/${MCP_DIR}/src"
+    echo "   - Working Directory: ${INSTALL_DIR}"
+    echo "   - Environment Variables: PYTHONPATH = ${INSTALL_DIR}/src"
     echo "3. Restart Augment Code completely"
     echo "4. Test with: 'Can you crawl the Python documentation?'"
-    echo -e "\n${BLUE}For detailed instructions, see:${NC}"
-    echo "https://github.com/carlvaneijk/crawl4ai_augment/blob/main/SELF_INTEGRATION_GUIDE.md"
-    echo -e "\n${BLUE}MCP server location: ${PROJECT_ROOT}/${MCP_DIR}${NC}"
-    echo -e "${BLUE}Uninstall script: ./${MCP_DIR}/scripts/uninstall.sh${NC}"
+    echo -e "\n${BLUE}Installation Location: ${INSTALL_DIR}${NC}"
+    echo -e "${BLUE}To uninstall: rm -rf ${INSTALL_DIR}${NC}"
 }
 
 # Run main function

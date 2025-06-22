@@ -11,12 +11,6 @@
     "tools": [
       "crawl_documentation",
       "extend_knowledge_graph"
-    ],
-    "resources": [
-      "knowledge_graph"
-    ],
-    "prompts": [
-      "analyze_framework"
     ]
   }
 }

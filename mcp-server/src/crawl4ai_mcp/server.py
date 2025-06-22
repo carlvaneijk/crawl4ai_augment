@@ -164,51 +164,8 @@ def should_crawl_link(link: str, base_url: str, patterns: Optional[List[str]] = 
     default_patterns = ['/api/', '/guide/', '/docs/', '/reference/', '/tutorial/']
     return any(pattern in link for pattern in default_patterns)
 
-@mcp.resource("knowledge_graph")
-async def get_knowledge_graph() -> str:
-    """
-    Retrieve the current state of the knowledge graph.
-
-    Returns:
-        JSON string of the knowledge graph
-    """
-    # This would typically load from a persistent store
-    # For now, return a placeholder
-    return json.dumps({
-        "frameworks": [],
-        "total_nodes": 0,
-        "last_updated": None
-    })
-
-@mcp.prompt("analyze_framework")
-async def analyze_framework_prompt(framework_name: str, documentation_url: str) -> str:
-    """
-    Generate a prompt for analyzing a new framework.
-
-    Args:
-        framework_name: Name of the framework
-        documentation_url: URL to the framework's documentation
-
-    Returns:
-        Formatted prompt for framework analysis
-    """
-    return f"""
-    Please analyze the {framework_name} framework by:
-
-    1. First, use the extend_knowledge_graph tool with these parameters:
-       - framework_name: "{framework_name}"
-       - base_url: "{documentation_url}"
-       - depth: 2
-       - patterns: ["/api/", "/guide/", "/tutorial/"]
-
-    2. Then, summarize:
-       - Core concepts and architecture
-       - Main APIs and their purposes
-       - Common use patterns
-       - Integration points with other tools
-
-    3. Finally, suggest how this framework could be useful in our current project context.
-    """
+# Note: Resources and prompts removed for now to ensure server stability
+# These can be added back once the basic tools are working
 
 # Main entry point
 if __name__ == "__main__":

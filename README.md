@@ -4,43 +4,46 @@ A complete integration package for adding Crawl4AI documentation crawling capabi
 
 ## 🚀 Quick Start
 
-**Option 1: One-line integration (recommended for Augment):**
+**Option 1: One-line installation (recommended):**
 
 ```bash
-# From any project directory where you want crawling capabilities
+# Install globally - serves all projects
 curl -sSL https://raw.githubusercontent.com/carlvaneijk/crawl4ai_augment/main/scripts/integrate.sh | bash
 ```
 
-**Option 2: Manual integration:**
+**Option 2: Manual installation:**
 
 ```bash
 # Clone the repository first
 git clone https://github.com/carlvaneijk/crawl4ai_augment.git
 cd crawl4ai_augment
 
-# Then run integration from your target project directory
-cd /path/to/your/project
-/path/to/crawl4ai_augment/scripts/integrate.sh
+# Run the installation script
+./scripts/integrate.sh
 ```
 
-### After Integration: Configure Augment
+### After Installation: Configure Augment
 
-**Important**: After running the integration script, you need to add the MCP server to Augment:
+**Important**: After running the global installation, you need to add the MCP server to Augment:
 
 1. **Open Augment Code** → **Settings** (gear icon) → **MCP Servers**
 2. **Add Server** with these details:
    - **Name**: `crawl4ai-knowledge`
    - **Command**: `uv`
    - **Arguments**: `run python server.py`
-   - **Working Directory**: `{{YOUR_PROJECT_PATH}}/.crawl4ai-mcp`
+   - **Working Directory**: `~/.augment/crawl4ai-mcp`
 3. **Restart Augment Code**
+
+⚠️ **JSON Configuration Note**: If editing settings.json manually, use `"augment.advanced.mcpServers"` as the key, NOT nested objects.
+
+✅ **Global Benefits**: One installation serves ALL your projects - no per-project setup needed!
 
 See [SELF_INTEGRATION_GUIDE.md](SELF_INTEGRATION_GUIDE.md) for detailed configuration instructions.
 
 ## 📁 Project Structure
 
 ```
-crawl4ai_augment/
+crawl4ai_augment/                # This repository
 ├── README.md                    # Project overview and quick start guide
 ├── SELF_INTEGRATION_GUIDE.md    # Complete integration instructions for Augment
 ├── mcp-server/                  # Ready-to-deploy MCP server
@@ -49,10 +52,17 @@ crawl4ai_augment/
 │   │   └── __init__.py
 │   └── pyproject.toml          # Dependencies and configuration
 ├── scripts/
-│   └── integrate.sh            # Automated integration script
+│   └── integrate.sh            # Automated global installation script
 └── templates/
     ├── augment-settings.json   # Augment configuration template
     └── mcp-config.json         # MCP server configuration template
+
+~/.augment/                      # Global installation location
+└── crawl4ai-mcp/               # Installed MCP server (after running script)
+    ├── server.py               # Server runner
+    ├── src/crawl4ai_mcp/       # Server implementation
+    ├── pyproject.toml          # Dependencies
+    └── .venv/                  # Virtual environment
 ```
 
 ## 🎯 Key Features
@@ -65,13 +75,13 @@ crawl4ai_augment/
 
 ## 🔧 Integration Strategy
 
-The integration follows a **sidecar pattern**:
+The integration follows a **global installation pattern**:
 
-1. **Isolated Environment**: Creates `.crawl4ai-mcp/` directory in your project
-2. **Dependency Management**: Uses UV or pip for isolated dependency installation
-3. **Configuration Detection**: Finds and updates existing Augment settings
-4. **Non-Destructive**: Preserves all existing MCP servers and configurations
-5. **Reversible**: Includes uninstall script for clean removal
+1. **Global Location**: Installs in `~/.augment/crawl4ai-mcp/`
+2. **One Server, All Projects**: Single installation serves all your projects
+3. **Isolated Dependencies**: Uses UV or pip for isolated dependency installation
+4. **Project-Independent**: No project directory modifications needed
+5. **Augment-Friendly**: Installed outside project directories as recommended
 
 ## 📖 Usage
 
@@ -89,16 +99,18 @@ Once integrated, use natural language with Augment:
 
 - `crawl_documentation(url, extract_type)` - Crawl and extract from URLs
 - `extend_knowledge_graph(framework_name, base_url, depth, patterns)` - Build knowledge graphs
-- `get_knowledge_graph()` - Retrieve current knowledge graph state
-- `analyze_framework_prompt(framework_name, documentation_url)` - Generate analysis prompts
+
+*Note: Additional resources and prompts will be added in future versions once the core functionality is stable.*
 
 ## 🔄 Rollback
 
-To remove the integration:
+To remove the global installation:
 
 ```bash
-./.crawl4ai-mcp/scripts/uninstall.sh
+rm -rf ~/.augment/crawl4ai-mcp
 ```
+
+Then remove the MCP server from your Augment settings and restart Augment Code.
 
 ## 🔧 Troubleshooting
 

@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: crawl4ai-mcp-server
+Version: 0.1.0
+Summary: MCP server for Crawl4AI integration
+Requires-Python: >=3.10
+Requires-Dist: mcp[cli]>=1.4.0
+Requires-Dist: crawl4ai>=0.4.0
+Requires-Dist: aiofiles>=24.0.0
+Requires-Dist: beautifulsoup4>=4.12.0
+Requires-Dist: lxml>=5.0.0

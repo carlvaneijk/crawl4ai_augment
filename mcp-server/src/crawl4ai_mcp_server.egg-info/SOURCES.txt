@@ -1,0 +1,8 @@
+pyproject.toml
+src/crawl4ai_mcp/__init__.py
+src/crawl4ai_mcp/server.py
+src/crawl4ai_mcp_server.egg-info/PKG-INFO
+src/crawl4ai_mcp_server.egg-info/SOURCES.txt
+src/crawl4ai_mcp_server.egg-info/dependency_links.txt
+src/crawl4ai_mcp_server.egg-info/requires.txt
+src/crawl4ai_mcp_server.egg-info/top_level.txt
