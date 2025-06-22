@@ -94,7 +94,7 @@ create_mcp_environment() {
 copy_server_files() {
     echo -e "\n${BLUE}Copying MCP server files...${NC}"
 
-    # Copy from the crawl4aistack repository
+    # Copy from the crawl4ai_augment repository
     cp "${SCRIPT_DIR}/../mcp-server/src/crawl4ai_mcp/server.py" "${MCP_DIR}/src/crawl4ai_mcp/"
     cp "${SCRIPT_DIR}/../mcp-server/src/crawl4ai_mcp/__init__.py" "${MCP_DIR}/src/crawl4ai_mcp/"
     cp "${SCRIPT_DIR}/../mcp-server/pyproject.toml" "${MCP_DIR}/"

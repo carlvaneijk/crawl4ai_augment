@@ -19,14 +19,14 @@ Execute the setup script that handles all integration automatically:
 
 ```bash
 # From your project root directory
-curl -sSL https://raw.githubusercontent.com/your-repo/crawl4aistack/main/scripts/integrate.sh | bash
+curl -sSL https://raw.githubusercontent.com/carlvaneijk/crawl4ai_augment/main/scripts/integrate.sh | bash
 ```
 
 Or manually run the integration script:
 
 ```bash
 # Clone the integration package
-git clone https://github.com/your-repo/crawl4aistack.git .crawl4ai-mcp
+git clone https://github.com/carlvaneijk/crawl4ai_augment.git .crawl4ai-mcp
 cd .crawl4ai-mcp
 ./scripts/integrate.sh
 ```
@@ -160,5 +160,11 @@ After successful integration:
 2. Explore the knowledge graph features
 3. Customize extraction patterns for your specific needs
 4. Consider setting up persistent storage for larger knowledge bases
+
+## Additional Resources
+
+- **[Crawl4AI Documentation](https://docs.crawl4ai.com/)** - Official Crawl4AI documentation
+- **[MCP Specification](https://modelcontextprotocol.io/)** - Model Context Protocol specification
+- **[Augment Code MCP Setup](https://docs.augmentcode.com/setup-augment/mcp)** - Augment MCP configuration guide
 
 The integration is designed to be invisible to your existing workflow while adding powerful documentation crawling capabilities to Augment.
